@@ -24,9 +24,11 @@ aws-cli \
 bash \
 bind-tools \
 build-base \
+build-base \
 ca-certificates \
 coreutils \
 curl \
+g++ \
 gcc \
 git \
 go \
