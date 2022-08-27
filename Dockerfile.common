@@ -25,14 +25,14 @@ make \
 openssh \
 tar \
 vault \
-wget && \
+wget
 
 # terraform and tfenv
 # How to use within your CD pipepine?
 #   export TF_VERSION=0.15.5;
 #   tfenv use 0.15.5
 
-git clone https://github.com/tfutils/tfenv.git ~/.tfenv && \
+RUN git clone https://github.com/tfutils/tfenv.git ~/.tfenv && \
     ln -s ~/.tfenv/bin/* /usr/local/bin && \
 
 for TERRAFORM_VERSION in ${TERRAFORM_VERSIONS}; do tfenv install ${TERRAFORM_VERSION}; done && \
@@ -46,13 +46,13 @@ wget -q https://github.com/gruntwork-io/terragrunt/releases/download/${TERRAGRUN
 wget -q https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl \
     -O /usr/local/bin/kubectl && chmod +x /usr/local/bin/kubectl
 
-# KOPS
+# kops
 RUN wget -q https://github.com/kubernetes/kops/releases/download/${KOPS_VERSION}/kops-linux-amd64 \
     -O /usr/local/bin/kops && chmod +x /usr/local/bin/kops
 
 
 # helm
-wget -q https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz \  
+RUN wget -q https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz \  
     -O helm.tar.gz && mkdir temp-helm && tar -zxvf helm.tar.gz -C temp-helm && mv temp-helm/linux-amd64/helm /usr/local/bin/helm && \
     rm -fr temp-helm && chmod +x /usr/local/bin/helm
 
