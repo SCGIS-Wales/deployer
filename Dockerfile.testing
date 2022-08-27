@@ -46,8 +46,8 @@ python3 \
 tar \
 unzip \
 vault \
-wget
-xz \
+wget \
+xz
 
 # terraform and tfenv
 # How to use within your CD pipepine?
