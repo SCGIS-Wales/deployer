@@ -8,6 +8,7 @@ ARG GEM_SOURCE=https://rubygems.org
 # Chef Inspec - Allow VERSION below to be controlled by either VERSION or EXPEDITOR_VERSION build arguments
 ENV VERSION ${EXPEDITOR_VERSION:-${VERSION}}
 
+ARG KOPS_VERSION="v1.22.2"
 ARG KUBECTL_VERSION=v1.25.0
 ARG TERRAFORM_VERSIONS="1.2.8 0.14.11 0.13.7 0.12.31"
 ARG TERRAFORM_DEFAULT_VERSION="1.2.8"
@@ -60,7 +61,7 @@ RUN wget -q https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl
     chmod +x /usr/local/bin/kubectl
 
 # KOPS
-RUN wget -q https://github.com/kubernetes/kops/releases/download/${KOPS_VER}/kops-linux-amd64 \
+RUN wget -q https://github.com/kubernetes/kops/releases/download/${KOPS_VERSION}/kops-linux-amd64 \
     -O /usr/local/bin/kops && chmod +x /usr/local/bin/kops
 
 # helm

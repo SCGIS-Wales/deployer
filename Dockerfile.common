@@ -1,5 +1,6 @@
 FROM alpine:latest
 
+ARG KOPS_VERSION="v1.22.2"
 ARG KUBECTL_VERSION=v1.25.0
 ARG TERRAFORM_VERSIONS="1.2.8 0.14.11 0.13.7 0.12.31"
 ARG TERRAFORM_DEFAULT_VERSION="1.2.8"
@@ -43,6 +44,11 @@ wget -q https://github.com/gruntwork-io/terragrunt/releases/download/${TERRAGRUN
 # kubectl
 wget -q https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl \
     -O /usr/local/bin/kubectl && chmod +x /usr/local/bin/kubectl
+
+# KOPS
+RUN wget -q https://github.com/kubernetes/kops/releases/download/${KOPS_VERSION}/kops-linux-amd64 \
+    -O /usr/local/bin/kops && chmod +x /usr/local/bin/kops
+
 
 # helm
 
