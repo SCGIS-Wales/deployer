@@ -95,7 +95,7 @@ VOLUME ["/share"]
 WORKDIR /share
 
 # npm packages
-npm install -g -unsafe-perm \
+RUN npm install -g -unsafe-perm \
 jfrog-cli-go \
 semantic-release-plus \
 @semantic-release/gitlab \
