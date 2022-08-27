@@ -37,10 +37,13 @@ git \
 gnupg \
 go \
 jq \
+libffi-dev \
+libxml2-dev \
 make \
 nodejs \
 npm \
 openssh \
+openssh-client \
 py3-pip \
 python3 \
 tar \
@@ -84,7 +87,6 @@ RUN  wget -q  https://s3.us-west-2.amazonaws.com/amazon-eks/1.21.2/2021-07-05/bi
 
 # chef inspec
 RUN mkdir -p /share
-RUN apk add --update build-base libxml2-dev libffi-dev git openssh-client
 RUN gem install --no-document --source ${GEM_SOURCE} --version ${VERSION} inspec
 RUN gem install --no-document --source ${GEM_SOURCE} --version ${VERSION} inspec-bin && \
     gem install aws-sdk
