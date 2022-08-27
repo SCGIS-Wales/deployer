@@ -28,19 +28,26 @@ build-base \
 ca-certificates \
 coreutils \
 curl \
+docker \
+docker-cli \
+docker-engine \
 g++ \
 gcc \
 git \
+gnupg \
 go \
 jq \
 make \
+nodejs \
 npm \
 openssh \
 py3-pip \
 python3 \
+tar \
 unzip \
 vault \
 wget
+xz \
 
 # terraform and tfenv
 # How to use within your CD pipepine?
@@ -78,6 +85,21 @@ RUN inspec --chef-license=accept && \
 RUN apk del build-base
 VOLUME ["/share"]
 WORKDIR /share
+
+# npm packages
+npm install -g -unsafe-perm \
+jfrog-cli-go \
+semantic-release-plus \
+@semantic-release/gitlab \
+@semantic-release/exec \
+@semantic-release/git \
+@semantic-release/changelog \
+@semantic-release/commit-analyzer \
+@semantic-release/release-notes-generator \
+@semantic-release/exec \
+@google/semantic-release-replace-plugin \
+lodash \
+sentry
 
 # Cleanup after installation
 RUN apk del wget && \
