@@ -12,6 +12,7 @@ ARG KUBECTL_VERSION=v1.25.0
 ARG TERRAFORM_VERSIONS="1.2.8 0.14.11 0.13.7 0.12.31"
 ARG TERRAFORM_DEFAULT_VERSION="1.2.8"
 ARG TERRAGRUNT_VERSION="v0.38.8"
+ARG VAULT_VERSION="v1.8"
 
 # Update local caches repo and upgrade the OS
 RUN apk update && \
@@ -36,6 +37,7 @@ npm \
 openssh \
 python3 \
 unzip \
+vault=${VAULT_VERSION} \
 wget
 
 # terraform and tfenv
