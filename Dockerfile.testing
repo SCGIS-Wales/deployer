@@ -8,6 +8,7 @@ ARG GEM_SOURCE=https://rubygems.org
 # Chef Inspec - Allow VERSION below to be controlled by either VERSION or EXPEDITOR_VERSION build arguments
 ENV VERSION ${EXPEDITOR_VERSION:-${VERSION}}
 
+ARG HELM_VERSION="v3.9.2"
 ARG KOPS_VERSION="v1.22.2"
 ARG KUBECTL_VERSION=v1.25.0
 ARG TERRAFORM_VERSIONS="1.2.8 0.14.11 0.13.7 0.12.31"
@@ -23,7 +24,6 @@ apk-tools \
 aws-cli \
 bash \
 bind-tools \
-build-base \
 build-base \
 ca-certificates \
 coreutils \
@@ -73,6 +73,14 @@ RUN wget -q https://github.com/kubernetes/kops/releases/download/${KOPS_VERSION}
     -O /usr/local/bin/kops && chmod +x /usr/local/bin/kops
 
 # helm
+wget -q https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz \  
+    -O helm.tar.gz && mkdir temp-helm && tar -zxvf helm.tar.gz -C temp-helm && mv temp-helm/linux-amd64/helm /usr/local/bin/helm && \
+    rm -fr temp-helm && chmod +x /usr/local/bin/helm
+
+# aws iam authenticator
+RUN  wget -q  https://s3.us-west-2.amazonaws.com/amazon-eks/1.21.2/2021-07-05/bin/linux/amd64/aws-iam-authenticator \
+    -O /usr/local/bin/aws-iam-authenticator && chmod +x /usr/local/bin/aws-iam-authenticator
+
 
 # chef inspec
 RUN mkdir -p /share
