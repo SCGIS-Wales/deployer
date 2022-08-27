@@ -1,0 +1,77 @@
+# Build Inspec
+FROM ruby:alpine AS builder
+
+RUN mkdir -p /share
+RUN apk add --no-cache build-base git-lfs
+
+COPY . /build
+RUN cd /build && \
+    bundle install && \
+    gem build inspec_tools.gemspec -o inspec_tools.gem
+
+
+# Main testing image
+FROM ruby:alpine
+
+ENV CHEF_LICENSE=accept-silent
+
+ARG KUBECTL_VERSION=v1.25.0
+ARG TERRAFORM_VERSIONS="1.2.8 0.14.11 0.13.7 0.12.31"
+ARG TERRAFORM_DEFAULT_VERSION="1.2.8"
+
+# Update local caches repo and upgrade the OS
+RUN apk update && \
+    apk --no-cache add \
+
+# Common required packages
+apk-tools \
+aws-cli \
+bash \
+bind-tools \
+build-base \
+ca-certificates \
+coreutils \
+curl \
+gcc \
+git \
+go \
+jq \
+make \
+openssh \
+python3 \
+wget
+
+# inspec
+COPY --from=builder /build/inspec_tools.gem /build/
+RUN gem install build/inspec_tools.gem
+RUN apk del build-base
+VOLUME ["/share"]
+WORKDIR /share
+RUN mkdir -p /share
+
+# terraform and tfenv
+# How to use within your CD pipepine?
+#   export TF_VERSION=0.15.5;
+#   tfenv use 0.15.5
+
+RUN git clone https://github.com/tfutils/tfenv.git ~/.tfenv && \
+    ln -s ~/.tfenv/bin/* /usr/local/bin
+
+RUN for TERRAFORM_VERSION in ${TERRAFORM_VERSIONS}; do tfenv install ${TERRAFORM_VERSION}; done && \
+    tfenv use ${TERRAFORM_DEFAULT_VERSION}
+
+# kubectl
+RUN wget -q https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl -O /usr/local/bin/kubectl && \
+    chmod +x /usr/local/bin/kubectl
+
+# helm
+
+
+# Cleanup after installation
+RUN apk del wget && \
+rm -rf /tmp/* && \
+rm -rf /var/cache/apk/*
+
+ENV LANG=en_US.UTF-8 \
+    LANGUAGE=en_US:en \
+    LC_ALL=en_US.UTF-8

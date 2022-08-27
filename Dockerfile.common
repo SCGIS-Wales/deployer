@@ -3,6 +3,7 @@ FROM alpine:latest
 ARG KUBECTL_VERSION=v1.25.0
 ARG TERRAFORM_VERSIONS="1.2.8 0.14.11 0.13.7 0.12.31"
 ARG TERRAFORM_DEFAULT_VERSION="1.2.8"
+ARG TERRAGRUNT_VERSION="v0.38.8"
 
 # Update local caches repo and upgrade the OS
 RUN apk update && \
@@ -18,22 +19,28 @@ coreutils \
 curl \
 git \
 jq \
-wget
+make \
+openssh \
+wget && \
 
 # terraform and tfenv
 # How to use within your CD pipepine?
 #   export TF_VERSION=0.15.5;
 #   tfenv use 0.15.5
 
-RUN git clone https://github.com/tfutils/tfenv.git ~/.tfenv && \
-    ln -s ~/.tfenv/bin/* /usr/local/bin
+git clone https://github.com/tfutils/tfenv.git ~/.tfenv && \
+    ln -s ~/.tfenv/bin/* /usr/local/bin && \
 
-RUN for TERRAFORM_VERSION in ${TERRAFORM_VERSIONS}; do tfenv install ${TERRAFORM_VERSION}; done && \
-    tfenv use ${TERRAFORM_DEFAULT_VERSION}
+for TERRAFORM_VERSION in ${TERRAFORM_VERSIONS}; do tfenv install ${TERRAFORM_VERSION}; done && \
+    tfenv use ${TERRAFORM_DEFAULT_VERSION} && \
+
+# terragrunt
+wget -q https://github.com/gruntwork-io/terragrunt/releases/download/${TERRAGRUNT_VERSION}/terragrunt_darwin_amd64 \
+    -O /usr/local/bin/terragrunt && chmod +x /usr/local/bin/terragrunt && \
 
 # kubectl
-RUN wget -q https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl -O /usr/local/bin/kubectl && \
-    chmod +x /usr/local/bin/kubectl
+wget -q https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl \
+    -O /usr/local/bin/kubectl && chmod +x /usr/local/bin/kubectl
 
 # helm
 
