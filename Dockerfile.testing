@@ -11,8 +11,8 @@ ENV VERSION ${EXPEDITOR_VERSION:-${VERSION}}
 ARG HELM_VERSION="v3.9.2"
 ARG KOPS_VERSION="v1.22.2"
 ARG KUBECTL_VERSION=v1.25.0
-ARG TERRAFORM_VERSIONS="1.2.8 0.14.11 0.13.7 0.12.31"
 ARG TERRAFORM_DEFAULT_VERSION="1.2.8"
+ARG TERRAFORM_VERSIONS="1.2.8 0.14.11 0.13.7 0.12.31"
 ARG TERRAGRUNT_VERSION="v0.38.8"
 
 # Update local caches repo and upgrade the OS
@@ -90,7 +90,6 @@ RUN gem install --no-document --source ${GEM_SOURCE} --version ${VERSION} inspec
     gem install aws-sdk
 RUN inspec --chef-license=accept && \
     inspec plugin install inspec-iggy
-RUN apk del build-base
 VOLUME ["/share"]
 WORKDIR /share
 
@@ -110,8 +109,7 @@ lodash \
 sentry
 
 # Cleanup after installation
-RUN apk del wget && \
-rm -rf /tmp/* && \
+RUN rm -rf /tmp/* && \
 rm -rf /var/cache/apk/*
 
 ENV LANG=en_US.UTF-8 \
