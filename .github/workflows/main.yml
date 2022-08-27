@@ -47,7 +47,7 @@ jobs:
           file: ./Dockerfile.common
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/deployer:latest, ${{ secrets.DOCKER_HUB_USERNAME }}/deployer:1.0.0
-          labels: "alpine", "terraform", "helm", "tfenv", "deployer"
+          labels: "alpine, terraform, helm, tfenv, deployer"
           # labels: ${{ steps.meta.outputs.labels }}
           # cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/maintenance-pod:buildcache
           # cache-to: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/maintenance-pod:buildcache,mode=max
