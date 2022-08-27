@@ -1,19 +1,12 @@
-# Build Inspec
-FROM ruby:alpine AS builder
-
-RUN mkdir -p /share
-RUN apk add --no-cache build-base git-lfs
-
-COPY . /build
-RUN cd /build && \
-    bundle install && \
-    gem build inspec_tools.gemspec -o inspec_tools.gem
-
-
 # Main testing image
 FROM ruby:alpine
 
-ENV CHEF_LICENSE=accept-silent
+# Chef Inspec - 
+ARG EXPEDITOR_VERSION
+ARG VERSION=4.16.0
+ARG GEM_SOURCE=https://rubygems.org
+# Chef Inspec - Allow VERSION below to be controlled by either VERSION or EXPEDITOR_VERSION build arguments
+ENV VERSION ${EXPEDITOR_VERSION:-${VERSION}}
 
 ARG KUBECTL_VERSION=v1.25.0
 ARG TERRAFORM_VERSIONS="1.2.8 0.14.11 0.13.7 0.12.31"
@@ -37,17 +30,11 @@ git \
 go \
 jq \
 make \
+npm \
 openssh \
 python3 \
+unzip \
 wget
-
-# inspec
-COPY --from=builder /build/inspec_tools.gem /build/
-RUN gem install build/inspec_tools.gem
-RUN apk del build-base
-VOLUME ["/share"]
-WORKDIR /share
-RUN mkdir -p /share
 
 # terraform and tfenv
 # How to use within your CD pipepine?
@@ -55,10 +42,14 @@ RUN mkdir -p /share
 #   tfenv use 0.15.5
 
 RUN git clone https://github.com/tfutils/tfenv.git ~/.tfenv && \
-    ln -s ~/.tfenv/bin/* /usr/local/bin
+    ln -s ~/.tfenv/bin/* /usr/local/bin && \
 
-RUN for TERRAFORM_VERSION in ${TERRAFORM_VERSIONS}; do tfenv install ${TERRAFORM_VERSION}; done && \
-    tfenv use ${TERRAFORM_DEFAULT_VERSION}
+for TERRAFORM_VERSION in ${TERRAFORM_VERSIONS}; do tfenv install ${TERRAFORM_VERSION}; done && \
+    tfenv use ${TERRAFORM_DEFAULT_VERSION} && \
+
+# terragrunt
+wget -q https://github.com/gruntwork-io/terragrunt/releases/download/${TERRAGRUNT_VERSION}/terragrunt_darwin_amd64 \
+    -O /usr/local/bin/terragrunt && chmod +x /usr/local/bin/terragrunt
 
 # kubectl
 RUN wget -q https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl -O /usr/local/bin/kubectl && \
@@ -66,6 +57,17 @@ RUN wget -q https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl
 
 # helm
 
+# chef inspec
+RUN mkdir -p /share
+RUN apk add --update build-base libxml2-dev libffi-dev git openssh-client
+RUN gem install --no-document --source ${GEM_SOURCE} --version ${VERSION} inspec
+RUN gem install --no-document --source ${GEM_SOURCE} --version ${VERSION} inspec-bin && \
+    gem install aws-sdk
+RUN inspec --chef-license=accept && \
+    inspec plugin install inspec-iggy
+RUN apk del build-base
+VOLUME ["/share"]
+WORKDIR /share
 
 # Cleanup after installation
 RUN apk del wget && \
