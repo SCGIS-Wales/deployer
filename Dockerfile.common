@@ -1,4 +1,4 @@
-FROM alpine:3.17.3
+FROM alpine:3.17.5
 
 ARG HELM_VERSION="v3.9.2"
 ARG KOPS_VERSION="v1.22.2"
